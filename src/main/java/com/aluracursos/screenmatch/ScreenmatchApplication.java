@@ -1,12 +1,16 @@
 package com.aluracursos.screenmatch;
 
 import model.DataEpisode;
+import model.DataSeason;
 import model.DataSerie;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import service.ConsumoAPI;
 import service.DataConverter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SpringBootApplication
 public class ScreenmatchApplication implements CommandLineRunner {
@@ -25,7 +29,16 @@ public class ScreenmatchApplication implements CommandLineRunner {
 		DataConverter converter = new DataConverter();
 		var data = converter.getData(json, DataSerie.class);
 		var dataEpisode = converter.getData(jsonEpisodes, DataEpisode.class);
+
 		System.out.println(data);
 		System.out.println(dataEpisode);
+
+		List<DataSeason> seasons = new ArrayList<>();
+		for (int i = 1; i <= data.totalSeason(); i++) {
+			json = consumoApi.getData("https://omdbapi.com/?t=prison+break&Season=" + i + "&apikey=9ff43673");
+			var dataSeason = converter.getData(json, DataSeason.class);
+			seasons.add(dataSeason);
+		}
+		seasons.forEach(System.out::println);
 	}
 }
