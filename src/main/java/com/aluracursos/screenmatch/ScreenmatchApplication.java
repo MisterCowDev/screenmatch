@@ -1,5 +1,6 @@
 package com.aluracursos.screenmatch;
 
+import Main.Main;
 import model.DataEpisode;
 import model.DataSeason;
 import model.DataSerie;
@@ -21,24 +22,7 @@ public class ScreenmatchApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		var consumoApi = new ConsumoAPI();
-		var json = consumoApi.getData("https://omdbapi.com/?t=prison+break&apikey=9ff43673");
-		var jsonEpisodes = consumoApi.getData("https://omdbapi.com/?t=prison+break&Season=1&episode=1&apikey=9ff43673");
-
-		// Obtener datos de una serie especifica
-		DataConverter converter = new DataConverter();
-		var data = converter.getData(json, DataSerie.class);
-		var dataEpisode = converter.getData(jsonEpisodes, DataEpisode.class);
-
-		System.out.println(data);
-		System.out.println(dataEpisode);
-
-		List<DataSeason> seasons = new ArrayList<>();
-		for (int i = 1; i <= data.totalSeason(); i++) {
-			json = consumoApi.getData("https://omdbapi.com/?t=prison+break&Season=" + i + "&apikey=9ff43673");
-			var dataSeason = converter.getData(json, DataSeason.class);
-			seasons.add(dataSeason);
-		}
-		seasons.forEach(System.out::println);
+		Main main = new Main();
+		main.showMenu();
 	}
 }
