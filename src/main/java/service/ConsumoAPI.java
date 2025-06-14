@@ -8,7 +8,6 @@ import java.net.http.HttpResponse;
 
 public class ConsumoAPI {
 
-
     public String getData(String url){
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -24,7 +23,5 @@ public class ConsumoAPI {
         }
         String json = response.body();
         return json;
-
     }
-
 }
