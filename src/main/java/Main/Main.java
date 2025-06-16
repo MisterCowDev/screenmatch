@@ -1,9 +1,6 @@
 package Main;
 
-import model.DataEpisode;
-import model.DataSeason;
-import model.DataSerie;
-import model.Episode;
+import model.*;
 import service.SerieApiClient;
 import service.DataConverter;
 
@@ -165,14 +162,25 @@ public class Main {
             DataSeason dataSeason = converter.getData(jsonSeason, DataSeason.class);
             seasons.add(dataSeason);
         }
+        seasons.forEach(dataSeason -> dataSeason.episodes()
+                .forEach(dataEpisode ->
+                        System.out.println(
+                                "Temporada: " + dataSeason.season() +
+                                        "\tEpisodio: " + dataEpisode.currentEpisode() +
+                                        "\tTítulo: " +dataEpisode.titulo()
+                        )));
     }
 
     private void showSearchSeries(){
-        if (dataSeries.size() != 0){
-            dataSeries.forEach(dataSerie -> System.out.println(dataSerie.title()));
-        } else {
-            System.out.println("\nAun no has buscado ninguna serie");
-        }
+        List<Serie> series = new ArrayList<>();
+        series = dataSeries.stream()
+                .map(d -> new Serie(d))
+                .collect(Collectors.toList());
+//        if (dataSeries.size() != 0){
+//            dataSeries.forEach(dataSerie -> System.out.println(dataSerie.title()));
+//        } else {
+//            System.out.println("\nAun no has buscado ninguna serie");
+//        }
 
     }
 }
