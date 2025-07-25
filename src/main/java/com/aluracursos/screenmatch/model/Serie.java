@@ -21,7 +21,7 @@ public class Serie {
     private String plot;
     private Double rating;
     private Integer totalSeason;
-    @OneToMany(mappedBy = "serie")
+    @OneToMany(mappedBy = "serie", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Episode> episodes;
 
     public Serie(){
@@ -111,6 +111,15 @@ public class Serie {
         this.totalSeason = totalSeason;
     }
 
+    public List<Episode> getEpisodes() {
+        return episodes;
+    }
+
+    public void setEpisodes(List<Episode> episodes) {
+        episodes.forEach(episode -> episode.setSerie(this));
+        this.episodes = episodes;
+    }
+
     @Override
     public String toString() {
         return
@@ -122,6 +131,7 @@ public class Serie {
                 ", poster='" + poster + '\'' +
                 ", plot='" + plot + '\'' +
                 ", totalSeason=" + totalSeason +
+                        ", episodios=" + episodes +
                 '}';
     }
 }
