@@ -1,8 +1,11 @@
-package Main;
+package com.aluracursos.screenmatch.Main;
 
-import model.*;
-import service.SerieApiClient;
-import service.DataConverter;
+import com.aluracursos.screenmatch.model.DataSeason;
+import com.aluracursos.screenmatch.model.DataSerie;
+import com.aluracursos.screenmatch.model.Serie;
+import com.aluracursos.screenmatch.repository.SerieRepository;
+import com.aluracursos.screenmatch.service.SerieApiClient;
+import com.aluracursos.screenmatch.service.DataConverter;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -14,6 +17,11 @@ public class Main {
     private final String API_KEY = "&apikey=9ff43673";
     private DataConverter converter = new DataConverter();
     private List<DataSerie> dataSeries = new ArrayList<>();
+    private SerieRepository repositorio;
+
+    public Main(SerieRepository repository) {
+        this.repositorio = repository;
+    }
 
 
     public void showMenu(){
@@ -35,6 +43,7 @@ public class Main {
             switch (option){
                 case 0:
                     System.out.println("Has salido de la aplicación");
+                    break;
                 case 1:
                     searchSeason();
                     break;
@@ -150,8 +159,10 @@ public class Main {
     }
 
     private void searchSeason(){
-        DataSerie serie = getDataSerie();
-        dataSeries.add(serie);
+        DataSerie dataSerie = getDataSerie();
+        // dataSeries.add(dataSerie);
+        Serie serie = new Serie(dataSerie);
+        repositorio.save(serie);
     }
 
     private void searchEpisodeForSeason(){
@@ -167,20 +178,21 @@ public class Main {
                         System.out.println(
                                 "Temporada: " + dataSeason.season() +
                                         "\tEpisodio: " + dataEpisode.currentEpisode() +
-                                        "\tTítulo: " +dataEpisode.titulo()
+                                        "\tTítulo: " + dataEpisode.titulo()
                         )));
     }
 
     private void showSearchSeries(){
+        /*
         List<Serie> series = new ArrayList<>();
         series = dataSeries.stream()
                 .map(d -> new Serie(d))
                 .collect(Collectors.toList());
-//        if (dataSeries.size() != 0){
-//            dataSeries.forEach(dataSerie -> System.out.println(dataSerie.title()));
-//        } else {
-//            System.out.println("\nAun no has buscado ninguna serie");
-//        }
-
+        series.stream()
+                .sorted(Comparator.comparing(Serie::getRating).reversed())
+                .forEach(System.out::println);
+         */
+        List<Serie> series = repositorio.findAll();
+        System.out.println(series);
     }
 }

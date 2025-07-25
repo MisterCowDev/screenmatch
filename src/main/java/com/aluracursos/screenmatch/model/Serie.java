@@ -1,20 +1,32 @@
-package model;
+package com.aluracursos.screenmatch.model;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
+import jakarta.persistence.*;
 
-import java.util.Optional;
+import java.util.List;
 import java.util.OptionalDouble;
 
+@Entity
+@Table(name = "series")
 public class Serie {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    @Column(unique = true)
     private String title;
     private String year;
+    @Enumerated(EnumType.STRING)
     private Genre genre;
     private String actors;
     private String poster;
     private String plot;
     private Double rating;
     private Integer totalSeason;
+    @OneToMany(mappedBy = "serie")
+    private List<Episode> episodes;
+
+    public Serie(){
+
+    }
 
     public Serie(DataSerie dataSerie) {
         this.title = dataSerie.title();
@@ -25,6 +37,14 @@ public class Serie {
         this.plot = dataSerie.plot();
         this.rating = OptionalDouble.of(Double.valueOf(dataSerie.rating())).orElse(0);
         this.totalSeason = dataSerie.totalSeason();
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -95,12 +115,12 @@ public class Serie {
     public String toString() {
         return
                 "title='" + title + '\'' +
+                ", rating=" + rating +
                 ", year='" + year + '\'' +
                 ", genre=" + genre +
                 ", actors='" + actors + '\'' +
                 ", poster='" + poster + '\'' +
                 ", plot='" + plot + '\'' +
-                ", rating=" + rating +
                 ", totalSeason=" + totalSeason +
                 '}';
     }

@@ -1,4 +1,4 @@
-package service;
+package com.aluracursos.screenmatch.service;
 
 public interface IDataConverter {
 

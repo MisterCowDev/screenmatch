@@ -1,4 +1,4 @@
-package model;
+package com.aluracursos.screenmatch.model;
 
 public enum Genre {
     ACCION("Action"),

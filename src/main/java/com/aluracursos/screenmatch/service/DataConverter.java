@@ -1,4 +1,4 @@
-package service;
+package com.aluracursos.screenmatch.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
