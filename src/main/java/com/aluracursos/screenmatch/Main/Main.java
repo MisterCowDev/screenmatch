@@ -1,9 +1,6 @@
 package com.aluracursos.screenmatch.Main;
 
-import com.aluracursos.screenmatch.model.DataSeason;
-import com.aluracursos.screenmatch.model.DataSerie;
-import com.aluracursos.screenmatch.model.Episode;
-import com.aluracursos.screenmatch.model.Serie;
+import com.aluracursos.screenmatch.model.*;
 import com.aluracursos.screenmatch.repository.SerieRepository;
 import com.aluracursos.screenmatch.service.SerieApiClient;
 import com.aluracursos.screenmatch.service.DataConverter;
@@ -26,16 +23,18 @@ public class Main {
         this.repositorio = repository;
     }
 
-
     public void showMenu(){
         var option = -1;
         while (option != 0){
             var menuOption = """
                     
                     ========================
-                    1 - Buscar datos de una serie
-                    2 - Buscar los episodios de una serie
+                    1 - Buscar datos de una serie (Agregar en base de datos)
+                    2 - Buscar los episodios de una serie (Agregar sus episodios)
                     3 - Mostrar series buscadas
+                    4 - Buscar una serie en la base de datos
+                    5 - Buscar el TOP 5 de series
+                    6 - Buscar una serie por su género
                     0 - Salir de la aplicación
                     ========================
                     """;
@@ -54,6 +53,15 @@ public class Main {
                     searchEpisodeForSeason();
                 case 3:
                     showSearchSeries();
+                    break;
+                case 4:
+                    showSerieForTitle();
+                    break;
+                case 5:
+                    showTop5Series();
+                    break;
+                case 6:
+                    searchSerieForGenre();
                     break;
                 default:
                     System.out.println("Opción ingresada no es valida");
@@ -225,5 +233,30 @@ public class Main {
         for (Serie serie : series) {
             System.out.println(serie);
         }
+    }
+
+    private void showSerieForTitle(){
+        System.out.print("Ingresa el título de la serie que buscas: ");
+        var serieName = lecture.nextLine();
+        Optional<Serie> searchedSerie = repositorio.findByTitleContainsIgnoreCase(serieName);
+        if (searchedSerie.isPresent()) {
+            System.out.println("La serie buscada es: " + searchedSerie);
+        } else {
+            System.out.println("La serie no fue encontrada en la base de datos");
+        }
+    }
+
+    private void showTop5Series(){
+        List<Serie> topSeries = repositorio.findTop5ByOrderByRatingDesc();
+        topSeries.forEach(s -> System.out.println("Título: " + s.getTitle() + " - Evaluación: " + s.getRating()));
+    }
+
+    private void searchSerieForGenre(){
+        System.out.print("Ingresa el género de las series que buscas: ");
+        var serieGenre = lecture.nextLine();
+        var categoria = Genre.fromSpanish(serieGenre);
+        List<Serie> serieGenreSearched = repositorio.findByGenre(categoria);
+        System.out.println("Las series encontradas del género: " + serieGenre);
+        serieGenreSearched.forEach(s -> System.out.println("Título: " + s.getTitle() + " - Género: " + s.getGenre()));
     }
 }
