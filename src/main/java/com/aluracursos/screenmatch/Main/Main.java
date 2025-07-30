@@ -18,6 +18,7 @@ public class Main {
     private List<DataSerie> dataSeries = new ArrayList<>();
     private SerieRepository repositorio;
     private List<Serie> series;
+    private Optional<Serie> searchedSerie;
 
     public Main(SerieRepository repository) {
         this.repositorio = repository;
@@ -35,6 +36,9 @@ public class Main {
                     4 - Buscar una serie en la base de datos
                     5 - Buscar el TOP 5 de series
                     6 - Buscar una serie por su género
+                    7 - Buscar una serie por número de temporadas y calificación
+                    8 - Buscar información por nombre de episodio
+                    9 - Buscar los TOP 5 episodios de una serie
                     0 - Salir de la aplicación
                     ========================
                     """;
@@ -62,6 +66,15 @@ public class Main {
                     break;
                 case 6:
                     searchSerieForGenre();
+                    break;
+                case 7:
+                    searchSerieForSeasonsAndRating();
+                    break;
+                case 8:
+                    findEpisodesForTitle();
+                    break;
+                case 9:
+                    top5EpisodesForSerie();
                     break;
                 default:
                     System.out.println("Opción ingresada no es valida");
@@ -238,7 +251,7 @@ public class Main {
     private void showSerieForTitle(){
         System.out.print("Ingresa el título de la serie que buscas: ");
         var serieName = lecture.nextLine();
-        Optional<Serie> searchedSerie = repositorio.findByTitleContainsIgnoreCase(serieName);
+        searchedSerie = repositorio.findByTitleContainsIgnoreCase(serieName);
         if (searchedSerie.isPresent()) {
             System.out.println("La serie buscada es: " + searchedSerie);
         } else {
@@ -258,5 +271,41 @@ public class Main {
         List<Serie> serieGenreSearched = repositorio.findByGenre(categoria);
         System.out.println("Las series encontradas del género: " + serieGenre);
         serieGenreSearched.forEach(s -> System.out.println("Título: " + s.getTitle() + " - Género: " + s.getGenre()));
+    }
+
+    private void searchSerieForSeasonsAndRating(){
+        System.out.print("Ingresa desde cuantas temporadas estas buscando: ");
+        var numberSeason = lecture.nextInt();
+        lecture.nextLine();
+        System.out.print("Ingresa desde que calificación estas buscando: ");
+        var ratingSeason = lecture.nextDouble();
+        lecture.nextLine();
+        List<Serie> selectedSeries = repositorio.findBySeasonAndRating(numberSeason, ratingSeason);
+        selectedSeries.forEach(s -> System.out.println("Título: " + s.getTitle() +
+                " Rating: " + s.getRating() +
+                " Total Temporadas: " + s.getTotalSeason()) );
+
+    }
+
+    private void findEpisodesForTitle(){
+        System.out.print("Escribe el nombre del episodio que deseas buscar: ");
+        var episodeName = lecture.nextLine();
+        List<Episode> episodeFound = repositorio.episodeForName(episodeName);
+        episodeFound.forEach(e ->
+                System.out.printf("Serie: %s Temporada %s Episodio %s Evaluación %s",
+                        e.getSerie().getTitle(), e.getSeason(), e.getNumberEpisode(), e.getRating()));
+    }
+
+    private void top5EpisodesForSerie(){
+        showSerieForTitle();
+        if(searchedSerie.isPresent()){
+            Serie serie = searchedSerie.get();
+            List<Episode> top5Episodes = repositorio.top5EpisodesForSerie(serie);
+            top5Episodes.forEach(e ->
+                    System.out.printf("Serie: %s Temporada %s Episodio %s Evaluación %s",
+                            e.getSerie().getTitle(), e.getSeason(), e.getNumberEpisode(), e.getRating()));
+        } else {
+            System.out.println("No se encotraron datos");
+        }
     }
 }
